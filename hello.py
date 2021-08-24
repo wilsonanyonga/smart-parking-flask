@@ -11,6 +11,9 @@ import pymysql
 
 import requests
 
+# for websockets
+from flask_socketio import SocketIO, send, emit
+
 app = Flask(__name__)
 
 # application = app # our hosting requires application in passenger_wsgi
@@ -21,6 +24,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost:3306/sm
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# for websockets
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app)
 
 # Init db
 db = SQLAlchemy(app)
@@ -64,9 +70,36 @@ def get_Allparking():
     return jsonify({"result":result,
                     "code": 200})
 
+@socketio.on('json')
+def handle_json(json):
+    print('received json: ' + str(json))
+
+@app.route('api/v1/some/<id>', methods=['PUT'])
+def some_function(id):
+    try:
+        home = Users.query.get(id)
+
+        reservation = request.json['reservation']
+
+        home.reservation = reservation
+
+        db.session.commit()
+
+        socketio.emit('some event', {'data': 42})
+
+        return jsonify({"result":"success",
+                        "code": 200})
+
+    except Exception as e:
+        print(str(e))
+        return jsonify({'error' : str(e),
+                        "code": 4000})  
+    
+
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # app.run(debug=True)
+    socketio.run(app, debug=True)
