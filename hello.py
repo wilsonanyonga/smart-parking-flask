@@ -62,7 +62,7 @@ class UserSchema(ma.Schema):
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
-@app.route('/api/parkingStatus', methods=['GET'])
+@app.route('/parkingStatus', methods=['GET'])
 
 def get_Allparking():
     all_parking = Users.query.all()
@@ -74,7 +74,7 @@ def get_Allparking():
 def handle_json(json):
     print('received json: ' + str(json))
 
-@app.route('api/v1/some/<id>', methods=['PUT'])
+@app.route('/some/<id>', methods=['PUT'])
 def some_function(id):
     try:
         home = Users.query.get(id)
