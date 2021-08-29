@@ -70,9 +70,13 @@ def get_Allparking():
     return jsonify({"result":result,
                     "code": 200})
 
-@socketio.on('json')
-def handle_json(json):
-    print('received json: ' + str(json))
+# @socketio.on('myevent', namespace='/test')
+# def handle_my_custom_event(json):
+#     print('received json: ' + str(json))
+
+@app.route('/test1', methods=['GET'])
+def lol():
+    print("im herer")
 
 @app.route('/some/<id>', methods=['PUT'])
 def some_function(id):
@@ -85,7 +89,7 @@ def some_function(id):
 
         db.session.commit()
 
-        socketio.emit('some event', {'data': 42})
+        # socketio.emit('some', {'data': 42}, namespace='/chat')
 
         return jsonify({"result":"success",
                         "code": 200})
