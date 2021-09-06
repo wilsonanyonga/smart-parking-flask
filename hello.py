@@ -27,6 +27,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # for websockets
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
+# logger=True, engineio_logger=True
 
 # Init db
 db = SQLAlchemy(app)
@@ -67,16 +68,30 @@ users_schema = UserSchema(many=True)
 def get_Allparking():
     all_parking = Users.query.all()
     result = users_schema.dump(all_parking)
+    print('im printed')
     return jsonify({"result":result,
                     "code": 200})
 
-# @socketio.on('myevent', namespace='/test')
-# def handle_my_custom_event(json):
-#     print('received json: ' + str(json))
+@socketio.on('myevent', namespace='/')
+def handle_my_custom_event(json):
+    print('received json: ' + str(json))
+    print('lola')
+
+@socketio.on('myevent2', namespace='/test')
+def handle_my_custom_event2(json):
+    print('received json: ' + str(json))
+    print('lola')
 
 @app.route('/test1', methods=['GET'])
 def lol():
     print("im herer")
+
+# app.config['SECRET_KEY'] = APP_SECRET_KEY
+# jwt = JWTManager(app)
+# cors = CORS(app)
+# app.config['CORS_HEADERS'] = 'Content-Type'
+# # app.config['transports'] = 'websocket'
+# socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 @app.route('/some/<id>', methods=['PUT'])
 def some_function(id):
@@ -98,6 +113,28 @@ def some_function(id):
         print(str(e))
         return jsonify({'error' : str(e),
                         "code": 4000})  
+
+@app.route('/irSensor/<id>', methods=['PUT'])
+def sensor_function(id):
+    try:
+        home = Users.query.get(id)
+
+        # reservation = request.json['reservation']
+
+        home.status = 1
+        print(id)
+
+        db.session.commit()
+
+        # socketio.emit('some', {'data': 42}, namespace='/chat')
+
+        return jsonify({"result":"success",
+                        "code": 200})
+
+    except Exception as e:
+        print(str(e))
+        return jsonify({'error' : str(e),
+                        "code": 4000})  
     
 
 @app.route("/")
@@ -107,3 +144,4 @@ def hello_world():
 if __name__ == "__main__":
     # app.run(debug=True)
     socketio.run(app, debug=True)
+    # app.run(debug=True,host='0.0.0.0')
