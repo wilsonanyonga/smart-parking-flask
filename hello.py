@@ -7,6 +7,8 @@ import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
+from datetime import datetime
+
 import pymysql
 
 import requests
@@ -69,6 +71,39 @@ def get_Allparking():
     all_parking = Users.query.all()
     result = users_schema.dump(all_parking)
     print('im printed')
+
+    now = datetime.now().time()
+    rightNow = (now.hour*3600)+(now.minute*60)+now.second
+    print(rightNow)
+
+    parkA1 = Users.query.get(1)
+    park1 = user_schema.dump(parkA1)
+    print(park1['res_time'])
+
+    
+    
+    
+
+    parkA2 = Users.query.get(2)
+    park2 = user_schema.dump(parkA2)
+    print(park2['res_time'])
+
+    parkA3 = Users.query.get(3)
+    park3 = user_schema.dump(parkA3)
+    print(park3['res_time'])
+
+    if (rightNow-park1['res_time'])>10:
+        parkA1.reservation = 0
+        db.session.commit()
+    
+    if (rightNow-park2['res_time'])>10:
+        parkA2.reservation = 0
+        db.session.commit()
+    
+    if (rightNow-park3['res_time'])>10:
+        parkA3.reservation = 0
+        db.session.commit()
+
     return jsonify({"result":result,
                     "code": 200})
 
@@ -100,7 +135,10 @@ def some_function(id):
 
         reservation = request.json['reservation']
 
+        time = datetime.now().time()
+
         home.reservation = reservation
+        home.res_time = time
 
         db.session.commit()
 
@@ -122,6 +160,7 @@ def sensor_function(id):
         # reservation = request.json['reservation']
 
         home.status = 1
+        home.reservation = 0
         print(id)
 
         db.session.commit()
