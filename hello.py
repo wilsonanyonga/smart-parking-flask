@@ -107,19 +107,63 @@ def get_Allparking():
     return jsonify({"result":result,
                     "code": 200})
 
-@socketio.on('myevent', namespace='/')
-def handle_my_custom_event(json):
-    print('received json: ' + str(json))
-    print('lola')
+@app.route('/parkingLight/<id>', methods=['GET'])
 
-@socketio.on('myevent2', namespace='/test')
-def handle_my_custom_event2(json):
-    print('received json: ' + str(json))
-    print('lola')
+def get_light(id):
+    # all_parking = Users.query.all()
+    # result = users_schema.dump(all_parking)
+    # print('im printed')
 
-@app.route('/test1', methods=['GET'])
-def lol():
-    print("im herer")
+    # now = datetime.now().time()
+    # rightNow = (now.hour*3600)+(now.minute*60)+now.second
+    # print(rightNow)
+
+    parkA1 = Users.query.get(id)
+    park1 = user_schema.dump(parkA1)
+    print(park1['reservation'])
+
+    lol = park1['reservation']
+    
+    
+
+    # parkA2 = Users.query.get(2)
+    # park2 = user_schema.dump(parkA2)
+    # print(park2['res_time'])
+
+    # parkA3 = Users.query.get(3)
+    # park3 = user_schema.dump(parkA3)
+    # print(park3['res_time'])
+
+    # if (rightNow-park1['res_time'])>10:
+    #     parkA1.reservation = 0
+    #     db.session.commit()
+    
+    # if (rightNow-park2['res_time'])>10:
+    #     parkA2.reservation = 0
+    #     db.session.commit()
+    
+    # if (rightNow-park3['res_time'])>10:
+    #     parkA3.reservation = 0
+    #     db.session.commit()
+
+    # return jsonify({"result":park1['reservation'],
+    #                 "code": 200})
+    return str(lol)
+
+
+# @socketio.on('myevent', namespace='/')
+# def handle_my_custom_event(json):
+#     print('received json: ' + str(json))
+#     print('lola')
+
+# @socketio.on('myevent2', namespace='/test')
+# def handle_my_custom_event2(json):
+#     print('received json: ' + str(json))
+#     print('lola')
+
+# @app.route('/test1', methods=['GET'])
+# def lol():
+#     print("im herer")
 
 # app.config['SECRET_KEY'] = APP_SECRET_KEY
 # jwt = JWTManager(app)
@@ -174,7 +218,29 @@ def sensor_function(id):
         print(str(e))
         return jsonify({'error' : str(e),
                         "code": 4000})  
-    
+
+@app.route('/irSensor2/<id>', methods=['PUT'])
+def sensor_function2(id):
+    try:
+        home = Users.query.get(id)
+
+        # reservation = request.json['reservation']
+
+        home.status = 0
+        # home.reservation = 0
+        print(id)
+
+        db.session.commit()
+
+        # socketio.emit('some', {'data': 42}, namespace='/chat')
+
+        return jsonify({"result":"success",
+                        "code": 200})
+
+    except Exception as e:
+        print(str(e))
+        return jsonify({'error' : str(e),
+                        "code": 4000})  
 
 @app.route("/")
 def hello_world():
