@@ -146,9 +146,9 @@ def get_light(id):
     #     parkA3.reservation = 0
     #     db.session.commit()
 
-    # return jsonify({"result":park1['reservation'],
-    #                 "code": 200})
-    return str(lol)
+    return jsonify({"result":park1['reservation'],
+                    "code": 200})
+    # return str(lol)
 
 
 # @socketio.on('myevent', namespace='/')
